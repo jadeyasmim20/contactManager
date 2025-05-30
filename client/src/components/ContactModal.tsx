@@ -1,12 +1,12 @@
 import {
-  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Avatar
+  Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Avatar, MenuItem, Select, InputLabel, FormControl
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 
 interface ContactModalProps {
   open: boolean;
   onClose: () => void;
-  onSave: (data: { name: string; email: string; phone: string; avatar: string }) => void;
+  onSave: (data: { name: string; email: string; phone: string; type: string; avatar?: string }) => void;
   contactToEdit?: any;
 }
 
@@ -15,6 +15,7 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [avatar, setAvatar] = useState('');
+  const [type, setType] = useState('Trabalho');
 
   useEffect(() => {
     if (contactToEdit) {
@@ -22,11 +23,13 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
       setEmail(contactToEdit.email || contactToEdit.emailEnc || '');
       setPhone(contactToEdit.phone || contactToEdit.phoneEnc || '');
       setAvatar(contactToEdit.avatar || '');
+      setType(contactToEdit.type || 'Trabalho');
     } else {
       setName('');
       setEmail('');
       setPhone('');
       setAvatar('');
+      setType('Trabalho');
     }
   }, [contactToEdit, open]);
 
@@ -44,7 +47,7 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
 
   const handleSubmit = () => {
     if (!isFormValid) return;
-    onSave({ name, email, phone, avatar });
+    onSave({ name, email, phone, avatar, type });
   };
 
   return (
@@ -100,6 +103,21 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
           type="email"
           autoComplete="email"
         />
+        <FormControl fullWidth sx={{ mb: 2 }}>
+          <InputLabel id="type-label" sx={{ color: '#fff' }}>Tipo</InputLabel>
+          <Select
+            labelId="type-label"
+            value={type}
+            label="Tipo"
+            onChange={(e) => setType(e.target.value)}
+            sx={{ color: '#fff', bgcolor: '#232323' }}
+          >
+            <MenuItem value="Trabalho">Trabalho</MenuItem>
+            <MenuItem value="Colega">Colega</MenuItem>
+            <MenuItem value="Família">Família</MenuItem>
+            <MenuItem value="Outro">Outro</MenuItem>
+          </Select>
+        </FormControl>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2 }}>
         <Button onClick={onClose} sx={{
