@@ -48,19 +48,19 @@ export class ContactsService {
       where: { userId },
     });
 
-    // Retorna contatos descriptografados para manter padrão com findOne
-    return Promise.all(
-      contacts.map(async (contact: any) => ({
-        id: contact.id,
-        name: contact.name,
-        email: await this.encryptionService.decrypt(contact.emailEnc),
-        phone: await this.encryptionService.decrypt(contact.phoneEnc),
-        avatar: contact.avatar,
-        type: contact.type || 'Trabalho',
-        userId: contact.userId,
-        createdAt: contact.createdAt,
-      }))
-    );
+    // Retorna contatos mascarados, mas inclui emailEnc e phoneEnc para o frontend
+    return contacts.map((contact: any) => ({
+      id: contact.id,
+      name: contact.name,
+      email: '************',
+      phone: '************',
+      emailEnc: contact.emailEnc,
+      phoneEnc: contact.phoneEnc,
+      avatar: contact.avatar,
+      type: contact.type || 'Trabalho',
+      userId: contact.userId,
+      createdAt: contact.createdAt,
+    }));
   }
 
   async findOne(id: number, userId: number) {
