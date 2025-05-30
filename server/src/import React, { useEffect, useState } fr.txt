@@ -1,0 +1,59 @@
+import React, { useEffect, useState } from 'react';
+
+const ContactForm = ({ contactToEdit, open }) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [avatar, setAvatar] = useState('');
+
+  useEffect(() => {
+    if (contactToEdit) {
+      setName(contactToEdit.name || '');
+      setEmail(contactToEdit.email || '');
+      setPhone(contactToEdit.phone || '');
+      setAvatar(contactToEdit.avatar || '');
+    } else {
+      setName('');
+      setEmail('');
+      setPhone('');
+      setAvatar('');
+    }
+  }, [contactToEdit, open]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Handle form submission
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      />
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="tel"
+        placeholder="Phone"
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Avatar URL"
+        value={avatar}
+        onChange={(e) => setAvatar(e.target.value)}
+      />
+      <button type="submit">Save Contact</button>
+    </form>
+  );
+};
+
+export default ContactForm;

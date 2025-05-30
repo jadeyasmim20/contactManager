@@ -41,6 +41,7 @@ describe('ContactsService', () => {
       phoneEnc: 'encrypted-value',
       avatar: 'base64string',
       userId: 1,
+      type: 'Trabalho',
       createdAt: new Date(),
     });
 
@@ -52,6 +53,7 @@ describe('ContactsService', () => {
       phoneEnc: 'encrypted-value',
       avatar: 'base64string',
       userId: 1,
+      type: 'Trabalho',
       createdAt: expect.any(Date),
     });
     expect(encryptionService.encrypt).toHaveBeenCalledTimes(2);
@@ -66,6 +68,7 @@ describe('ContactsService', () => {
         phoneEnc: 'encrypted-value',
         avatar: 'base64string',
         userId: 1,
+        type: 'Trabalho',
         createdAt: new Date(),
       },
     ]);
@@ -88,5 +91,30 @@ describe('ContactsService', () => {
     jest.spyOn(prismaService.contact, 'findUnique').mockResolvedValue(null);
 
     await expect(service.findOne(1, 1)).rejects.toThrow(UnauthorizedException);
+  });
+
+  it('should update a contact', async () => {
+    jest.spyOn(prismaService.contact, 'update').mockResolvedValue({
+      id: 1,
+      name: 'Jane Doe',
+      emailEnc: 'encrypted-value',
+      phoneEnc: 'encrypted-value',
+      avatar: 'base64string',
+      userId: 1,
+      type: 'Trabalho',
+      createdAt: new Date(),
+    });
+
+    const result = await service.update(1, 1, 'Jane Doe', 'jane@example.com', '123456789', 'base64string', 'Trabalho');
+    expect(result).toEqual({
+      id: 1,
+      name: 'Jane Doe',
+      emailEnc: 'encrypted-value',
+      phoneEnc: 'encrypted-value',
+      avatar: 'base64string',
+      userId: 1,
+      type: 'Trabalho',
+      createdAt: expect.any(Date),
+    });
   });
 });

@@ -13,20 +13,33 @@ export class EncryptionService {
   }
 
   async encrypt(text: string): Promise<string> {
-    const iv = randomBytes(16);
-    const key = await this.key;
-    const cipher = createCipheriv(this.algorithm, key, iv);
-    const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
-    return iv.toString('hex') + ':' + encrypted.toString('hex');
+    try {
+      const iv = randomBytes(16);
+      const key = await this.key;
+      const cipher = createCipheriv(this.algorithm, key, iv);
+      const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+      const result = iv.toString('hex') + ':' + encrypted.toString('hex');
+      console.log('[🔒 ENCRYPT] Texto original:', text, '-> Criptografado:', result);
+      return result;
+    } catch (err) {
+      console.error('[❌ ERRO ENCRYPT]', err);
+      throw new Error('Erro ao criptografar');
+    }
   }
 
   async decrypt(text: string): Promise<string> {
-    const [ivHex, encryptedHex] = text.split(':');
-    const iv = Buffer.from(ivHex, 'hex');
-    const encrypted = Buffer.from(encryptedHex, 'hex');
-    const key = await this.key;
-    const decipher = createDecipheriv(this.algorithm, key, iv);
-    const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
-    return decrypted.toString();
+    try {
+      const [ivHex, encryptedHex] = text.split(':');
+      const iv = Buffer.from(ivHex, 'hex');
+      const encrypted = Buffer.from(encryptedHex, 'hex');
+      const key = await this.key;
+      const decipher = createDecipheriv(this.algorithm, key, iv);
+      const decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]);
+      console.log('[🔓 DECRYPT] Texto criptografado:', text, '-> Decriptado:', decrypted.toString());
+      return decrypted.toString();
+    } catch (err) {
+      console.error('[❌ ERRO DECRYPT]', err);
+      throw new Error('Erro ao descriptografar');
+    }
   }
 }

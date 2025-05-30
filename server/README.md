@@ -21,78 +21,66 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Contact Manager - Backend
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este é o backend do projeto **Contact Manager**, desenvolvido em **NestJS** com **TypeScript** e **Prisma ORM**.
 
-## Project setup
+## Funcionalidades
 
-```bash
-$ npm install
-```
+- Cadastro e autenticação de usuários (JWT)
+- Gerenciamento de contatos (CRUD)
+- Criptografia de dados sensíveis (e-mail e telefone)
+- Upload de avatar para contatos
+- Integração com banco de dados via Prisma
 
-## Compile and run the project
+## Como rodar o projeto
 
-```bash
-# development
-$ npm run start
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
+2. Configure o arquivo `.env` na raiz do `server` (exemplo de variáveis: `DATABASE_URL`, `JWT_SECRET`, `ENCRYPTION_KEY`).
+3. Execute as migrations do Prisma:
+   ```bash
+   npx prisma migrate deploy
+   ```
+4. Inicie o servidor:
+   ```bash
+   npm run start:dev
+   ```
+   O backend estará disponível em [http://localhost:3000](http://localhost:3000).
 
-# watch mode
-$ npm run start:dev
+## Scripts úteis
 
-# production mode
-$ npm run start:prod
-```
+- `npm run start:dev` — inicia o servidor em modo desenvolvimento
+- `npm run start:prod` — inicia o servidor em modo produção
+- `npm run test` — executa os testes unitários
+- `npm run test:e2e` — executa os testes end-to-end
+- `npm run test:cov` — gera o relatório de cobertura de testes
+- `npx prisma studio` — abre o Prisma Studio para visualizar o banco de dados
 
-## Run tests
+## Estrutura de pastas
 
-```bash
-# unit tests
-$ npm run test
+- `src/auth`: Módulo de autenticação
+- `src/contacts`: Módulo de contatos
+- `src/prisma`: Serviço de acesso ao banco de dados
+- `src/utils/encryption`: Serviço de criptografia
+- `prisma/`: Migrations e schema do Prisma
 
-# e2e tests
-$ npm run test:e2e
+## Tecnologias utilizadas
 
-# test coverage
-$ npm run test:cov
-```
+- [NestJS](https://nestjs.com/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Prisma ORM](https://www.prisma.io/)
+- [JWT](https://jwt.io/)
+- [Bcrypt](https://github.com/kelektiv/node.bcrypt.js)
 
-## Deployment
+## Dicas de desenvolvimento
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- O frontend espera que a API esteja rodando em `http://localhost:3000`.
+- Nunca suba seu arquivo `.env` para repositórios públicos.
+- Para rodar em produção, configure corretamente as variáveis de ambiente e o banco de dados.
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+> Projeto desenvolvido para fins de estudo e demonstração de boas práticas com NestJS, Prisma e autenticação JWT.
