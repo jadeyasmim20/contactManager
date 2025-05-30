@@ -41,8 +41,10 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
     reader.readAsDataURL(file);
   };
 
-  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  const isPhoneValid = /^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/.test(phone);
+  // Validação robusta de e-mail e telefone
+  const isEmailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email.trim());
+  const phoneDigits = phone.replace(/\D/g, '');
+  const isPhoneValid = /^(?:\d{10}|\d{11})$/.test(phoneDigits);
   const isFormValid = name && isEmailValid && isPhoneValid;
 
   const handleSubmit = () => {
@@ -88,6 +90,8 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
           }}
           InputLabelProps={{ style: { color: '#bdbdbd' }, shrink: true }}
           margin="dense"
+          error={!!phone && !isPhoneValid}
+          helperText={!!phone && !isPhoneValid ? "Telefone inválido. Use DDD e número com 10 ou 11 dígitos." : ""}
         />
         <TextField
           fullWidth
@@ -102,6 +106,8 @@ const ContactModal = ({ open, onClose, onSave, contactToEdit }: ContactModalProp
           margin="dense"
           type="email"
           autoComplete="email"
+          error={!!email && !isEmailValid}
+          helperText={!!email && !isEmailValid ? "E-mail inválido." : ""}
         />
         <FormControl fullWidth sx={{ mb: 2 }}>
           <InputLabel id="type-label" sx={{ color: '#fff' }}>Tipo</InputLabel>

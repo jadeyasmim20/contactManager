@@ -144,21 +144,24 @@ client/
 
 ## Regras de Negócio: Usuário x Contatos
 
-No Contact Manager, é importante entender a separação entre **cadastro de usuário** (login) e **cadastro de contatos**:
+No Contact Manager, é fundamental entender a separação entre **cadastro de usuário** (login) e **cadastro de contatos**:
 
 - **Usuário (UserID):**  
   Cada pessoa que acessa o sistema precisa criar uma conta (login e senha).  
   O usuário recebe um identificador único (`userId`).  
-  Todas as ações (criar, editar, deletar contatos) ficam associadas a esse `userId`.
+  Todas as ações (criar, editar, deletar contatos) ficam associadas a esse `userId`.  
+  **Atenção:** O cadastro/login serve apenas para acessar o sistema e garantir que cada usuário tenha sua área privada.
 
 - **Contatos:**  
   Cada contato cadastrado (nome, telefone, e-mail, tipo, avatar) pertence a um usuário específico.  
   Ou seja, **cada usuário só vê e gerencia sua própria lista de contatos**.  
-  Não é possível acessar, editar ou visualizar contatos de outros usuários.
+  Não é possível acessar, editar ou visualizar contatos de outros usuários.  
+  O cadastro de contatos é feito dentro do sistema, após o login, e cada contato fica vinculado ao `userId` do usuário logado.
 
-**Resumo:**  
-O cadastro/login é para o usuário acessar o sistema.  
-O cadastro de contatos é feito dentro do sistema, e cada contato pertence a um usuário específico.
+**Resumo Didático:**  
+- O cadastro/login é para o usuário acessar o sistema e criar sua área privada.
+- O cadastro de contatos é feito dentro do sistema, e cada contato pertence exclusivamente ao usuário logado.
+- Isso garante privacidade e segurança: um usuário nunca vê os contatos de outro.
 
 ---
 
@@ -177,6 +180,7 @@ curl -X POST http://localhost:3000/contacts \
   -H "Content-Type: application/json" \
   -d '{"name":"João","email":"joao@email.com","phone":"(11)99999-8888","type":"Colega"}'
 ```
+- **Explicação:** Cria um novo contato para o usuário autenticado pelo token JWT.
 
 #### 2. Listar contatos do usuário logado
 
@@ -184,6 +188,7 @@ curl -X POST http://localhost:3000/contacts \
 curl -X GET http://localhost:3000/contacts \
   -H "Authorization: Bearer <SEU_TOKEN_JWT>"
 ```
+- **Explicação:** Lista apenas os contatos do usuário autenticado.
 
 #### 3. Atualizar um contato
 
@@ -193,6 +198,7 @@ curl -X PUT http://localhost:3000/contacts/1 \
   -H "Content-Type: application/json" \
   -d '{"name":"João da Silva","type":"Trabalho"}'
 ```
+- **Explicação:** Atualiza o contato de ID 1, se ele pertencer ao usuário autenticado.
 
 #### 4. Deletar um contato
 
@@ -200,6 +206,7 @@ curl -X PUT http://localhost:3000/contacts/1 \
 curl -X DELETE http://localhost:3000/contacts/1 \
   -H "Authorization: Bearer <SEU_TOKEN_JWT>"
 ```
+- **Explicação:** Remove o contato de ID 1, se ele pertencer ao usuário autenticado.
 
 #### 5. Desbloquear (visualizar) um contato
 
@@ -209,14 +216,80 @@ curl -X POST http://localhost:3000/contacts/1/unlock \
   -H "Content-Type: application/json" \
   -d '{"password":"suaSenha"}'
 ```
+- **Explicação:** Descriptografa e retorna os dados sensíveis do contato de ID 1, após validação da senha do usuário.
 
 ### Observações Didáticas
 
 - **Cada rota exige autenticação:** O token JWT do usuário deve ser enviado no header Authorization.
-- **Assegurando o isolamento:** Só é possível manipular contatos do próprio usuário.
+- **Isolamento garantido:** Só é possível manipular contatos do próprio usuário, nunca de outros.
 - **Banco de dados:** Todas as operações refletem imediatamente no banco PostgreSQL, e podem ser conferidas usando o Prisma Studio.
+- **Testes via terminal:** São importantes para garantir que as regras de negócio e segurança estão funcionando corretamente, mesmo antes de testar pela interface gráfica.
 
 ---
 
-> Este guia foi criado para ajudar no entendimento do projeto e das melhores práticas de desenvolvimento fullstack com React, NestJS e Prisma.  
-> Bons estudos!
+## Instalação e Configuração do PostgreSQL
+
+### 1. Baixando e Instalando o PostgreSQL
+
+- Baixe o instalador do PostgreSQL em:  
+  [https://www.postgresql.org/download/windows/](https://www.postgresql.org/download/windows/)
+- Siga o assistente de instalação, anote o usuário (geralmente `postgres`), senha e porta (padrão: 5432).
+- Após instalar, você pode usar o **pgAdmin** (instalado junto) para criar bancos e gerenciar dados de forma visual.
+
+### 2. Criando o Banco de Dados
+
+- Abra o **pgAdmin** ou use o terminal do PostgreSQL.
+- Crie um banco chamado `contactmanager`:
+  ```sql
+  CREATE DATABASE contactmanager;
+  ```
+
+### 3. Configurando o arquivo `.env`
+
+No diretório `server`, crie um arquivo chamado `.env` com o seguinte conteúdo (ajuste usuário e senha conforme sua instalação):
+
+```
+DATABASE_URL="postgresql://postgres:SENHA@localhost:5432/contactmanager"
+JWT_SECRET="umsegredoseguro"
+ENCRYPTION_KEY="umachavesecreta"
+```
+- **DATABASE_URL:** String de conexão do Prisma com o PostgreSQL.
+- **JWT_SECRET:** Segredo usado para autenticação JWT.
+- **ENCRYPTION_KEY:** Chave usada para criptografia dos dados sensíveis.
+
+> **Dica:** Nunca compartilhe seu `.env` publicamente.
+
+---
+
+### 4. (Opcional) Configurando o arquivo `pg_hba.conf`
+
+Se você tiver problemas para conectar ao PostgreSQL (por exemplo, erro de autenticação), pode ser necessário ajustar o arquivo `pg_hba.conf`:
+
+- O arquivo geralmente está em:  
+  `C:\Program Files\PostgreSQL\<versão>\data\pg_hba.conf`
+- Abra o arquivo com um editor de texto como administrador.
+- Procure por linhas como:
+  ```
+  host    all             all             127.0.0.1/32            md5
+  ```
+- Se necessário, troque `md5` por `trust` para testes locais (NÃO recomendado em produção):
+  ```
+  host    all             all             127.0.0.1/32            trust
+  ```
+- Salve o arquivo e reinicie o serviço do PostgreSQL.
+
+> **Atenção:** Só altere o `pg_hba.conf` se estiver com dificuldades de autenticação.  
+> Em ambientes de produção, mantenha o método `md5` ou `scram-sha-256` para segurança.
+
+---
+
+### 5. Observação sobre o comando `nest new server`
+
+> **Atenção:**  
+> O comando `nest new server` só deve ser executado para criar um novo projeto NestJS do zero.  
+> **Se você já baixou o projeto do GitHub, NÃO execute esse comando novamente.**  
+> Basta instalar as dependências com `npm install` dentro da pasta `server`.
+
+---
+
+> Compreender a separação entre usuário e contatos, e testar as rotas diretamente, é fundamental para garantir segurança, privacidade e funcionamento correto do sistema.
